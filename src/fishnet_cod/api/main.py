@@ -26,7 +26,7 @@ from ..core.session import initialize_aars
 from .api_model import MessageResponse
 from .routers import (
     algorithms,
-    datasets,
+    services,
     executions,
     permissions,
     results,
