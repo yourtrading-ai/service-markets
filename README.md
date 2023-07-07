@@ -1,8 +1,8 @@
-# fishnet-cod
-P2P Financial Signal Hosting Network on Aleph
+# service-markets
+Software-as-a-Service (SaaS) Marketplace with cryptocurrency payments
 
 ## Initial setup
-Install the FastAPI library and Uvicorn: 
+Install the FastAPI library and Uvicorn:
 ```shell
 poetry install
 ```
@@ -30,13 +30,6 @@ python -m uvicorn src.fishnet_cod.api.main:app --reload
 Then open the app in a web browser on http://localhost:8000
 
 > Tip: With `--reload`, Uvicorn will automatically reload your code upon changes  
-
-### Running the Executor
-When the API is running, you can run the local executor to automatically
-process the pending execution requests.
-```shell
-python /src/fishnet_cod/local_executor.py
-```
 
 ## Testing
 To run the tests, you need to [install the dev dependencies](#installing-dev-dependencies).

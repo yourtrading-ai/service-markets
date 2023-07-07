@@ -1,31 +1,19 @@
-FISHNET_MESSAGE_CHANNEL = "FISHNET_TEST_V1.6"
-FISHNET_DEPLOYMENT_CHANNEL = "FISHNET_TEST_DEPLOYMENT_V1.6"
-FISHNET_MANAGER_PUBKEYS = [
+SERVICE_MARKETS_MESSAGE_CHANNEL = "SERVICE_MARKETS_TEST_V0.1"
+SERVICE_MARKETS_MANAGER_PUBKEYS = [
     "Bxa95pz5SkcKQE5Qji893inhxeXsnhVK8uALoF993fVv",  # Mike
-    "5cyWHnWcqk8QpGntEWUnJAiSg8P78pnvs47WZd8jeHDH",  # Kingsley
-]
-
-EXECUTOR_PATH = "../executor"
-EXECUTOR_MESSAGE_FILTER = [
-    {
-        "channel": FISHNET_MESSAGE_CHANNEL,
-        "type": "POST",
-        "post_type": ["Execution", "amend"],
-    }
 ]
 
 API_PATH = "../api"
 API_MESSAGE_FILTER = [
     {
-        "channel": FISHNET_MESSAGE_CHANNEL,
+        "channel": SERVICE_MARKETS_MESSAGE_CHANNEL,
         "type": "POST",
         "post_type": [
-            "Execution",
+            "Service",
+            "UserInfo",
+            "Vote",
+            "Comment",
             "Permission",
-            "Dataset",
-            "Timeseries",
-            "Algorithm",
-            "Result",
             "amend",
         ],
     }

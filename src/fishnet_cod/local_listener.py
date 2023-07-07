@@ -1,15 +1,13 @@
 import time
-from typing import Optional
 
 import requests
 from aleph_message.models import MessageType, PostMessage
 
 from core.constants import API_MESSAGE_FILTER
-from core.model import Execution
 from core.session import initialize_aars
 
 
-async def handle_message(event: PostMessage) -> Optional[Execution]:
+async def handle_message(event: PostMessage):
     print(f"Received event: {event.content.type}")
     if event.content.type in API_MESSAGE_FILTER[0]["post_type"]:
         print(f"Sending event to API: {event}")
