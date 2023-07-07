@@ -23,11 +23,12 @@ class Service(Votable):
     url: str
     tags: List[str]
     owner_address: str
+    comment_counter: int
 
 
 class VoteType(Enum):
-    UPVOTE = 1
-    DOWNVOTE = -1
+    UP = 1
+    DOWN = -1
 
 
 class VotableType(Enum):

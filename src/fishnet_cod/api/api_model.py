@@ -7,7 +7,7 @@ from pydantic import BaseModel
 from ..core.model import (
     Permission,
     UserInfo,
-    Service,
+    Service, Vote, Comment,
 )
 from .security import AuthInfo
 
@@ -32,6 +32,16 @@ class UploadServiceRequest(BaseModel):
 
 class ServiceWithPermissionStatus(Service):
     permitted: Optional[bool] = None
+
+
+class VoteServiceResponse(BaseModel):
+    vote: Vote
+    service: Service
+
+
+class VoteCommentResponse(BaseModel):
+    vote: Vote
+    service: Comment
 
 
 class PutUserInfo(BaseModel):

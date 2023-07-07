@@ -1,13 +1,14 @@
-from typing import List, Optional
+import asyncio
+from typing import List, Optional, TypeVar, Tuple
 
 from fastapi import APIRouter, HTTPException
 
 from ...core.model import (
     Service,
-    Permission, Comment,
+    Permission, Comment, VoteType, Vote, VotableType, Votable,
 )
 from ..api_model import (
-    ServiceWithPermissionStatus, UploadServiceRequest,
+    ServiceWithPermissionStatus, UploadServiceRequest, VoteServiceResponse, VoteCommentResponse,
 )
 
 router = APIRouter(
@@ -15,6 +16,8 @@ router = APIRouter(
     tags=["services"],
     responses={404: {"description": "Not found"}},
 )
+
+T = TypeVar("T", bound=Votable)
 
 
 @router.get("")
@@ -101,6 +104,32 @@ async def get_service_permissions(service_id: str) -> List[Permission]:
     return permissions
 
 
+@router.put("/{service_id}/vote")
+async def vote_service(
+    service_id: str,
+    user_address: str,
+    vote: VoteType,
+) -> VoteServiceResponse:
+    """
+    Update your vote for a given service.
+    """
+    service = await Service.fetch(service_id).first()
+    if not service:
+        raise HTTPException(status_code=404, detail="No Service found")
+    vote_record = await Vote.filter(service_id=service_id, user_address=user_address).first()
+    if not vote_record:
+        vote_record = Vote(
+            comment_id=service_id,
+            item_type=VotableType.SERVICE,
+            user_address=user_address,
+            vote=vote,
+        ).save(),
+    else:
+        vote_record.vote = vote
+    service, vote_record = update_vote(service, vote_record)
+    return VoteServiceResponse(service=service, vote=vote_record)
+
+
 @router.get("/{service_id}/comments")
 async def get_service_comments(
     service_id: str,
@@ -114,3 +143,68 @@ async def get_service_comments(
         page=page, page_size=page_size
     )
     return comments
+
+
+@router.post("/{service_id}/comments")
+async def post_service_comment(
+    service_id: str,
+    comment: str,
+    user_address: str,
+) -> Comment:
+    """
+    Post a comment for a given service.
+    """
+    return await Comment(
+        service_id=service_id,
+        comment=comment,
+        user_address=user_address,
+    ).save()
+
+
+@router.put("/{service_id}/comments/{comment_id}/vote")
+async def vote_service_comment(
+    service_id: str,
+    comment_id: str,
+    user_address: str,
+    vote: VoteType,
+) -> VoteCommentResponse:
+    """
+    Update your vote for a given comment.
+    """
+    comment = await Comment.fetch(comment_id).first()
+    if not comment:
+        raise HTTPException(status_code=404, detail="No Comment found")
+    vote_record = await Vote.filter(comment_id=comment_id, user_address=user_address).first()
+    if not vote_record:
+        vote_record = Vote(
+            comment_id=comment_id,
+            item_type=VotableType.COMMENT,
+            user_address=user_address,
+            vote=vote,
+        ).save(),
+    else:
+        vote_record.vote = vote
+    comment, vote_record = await update_vote(comment, vote_record)
+    return VoteCommentResponse(comment=comment, vote=vote_record)
+
+
+async def update_vote(votable: T, vote_record: Vote) -> Tuple[T, Vote]:
+    if vote_record:
+        if vote_record.vote == VoteType.UP and vote_record.vote == VoteType.DOWN:
+            votable.downvotes -= 1
+            votable.upvotes += 1
+        elif vote_record.vote == VoteType.DOWN and vote_record.vote == VoteType.UP:
+            votable.downvotes += 1
+            votable.upvotes -= 1
+        await asyncio.gather(
+            votable.save(),
+            vote_record.save(),
+        )
+    else:
+        votable.upvotes += 1 if vote_record.vote == VoteType.UP else 0
+        votable.downvotes += 1 if vote_record.vote == VoteType.DOWN else 0
+        vote_record, votable = await asyncio.gather(
+            vote_record.save(),
+            votable.save(),
+        )
+    return votable, vote_record
