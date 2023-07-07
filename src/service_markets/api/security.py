@@ -1,13 +1,17 @@
+import json
 import time
 from enum import Enum
-from typing import Dict, Optional
+from typing import Dict, Optional, Annotated, Union
 
+from aleph.sdk.chains.common import get_verification_buffer
 from aleph.sdk.chains.ethereum import verify_signature as verify_signature_eth
 from aleph.sdk.chains.sol import verify_signature as verify_signature_sol
 from fastapi import HTTPException
+from fastapi.params import Depends
+from fastapi.security import HTTPBearer
 from fastapi.security.utils import get_authorization_scheme_param
 from nacl.bindings.randombytes import randombytes
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from starlette.requests import Request
 from starlette.status import HTTP_401_UNAUTHORIZED, HTTP_403_FORBIDDEN
 
@@ -25,17 +29,23 @@ class AuthInfo(BaseModel):
 
 class WalletAuth(AuthInfo):
     challenge: str
-    _token: Optional[str]
+    _token: Optional[str] = Field(..., alias="token")
 
-    def __init__(self, pubkey: str, chain: SupportedChains, ttl: int = 60):
-        challenge = f"Authentication challenge {randombytes(64).hex()}"
+    class Config:
+        allow_population_by_field_name = True
+        extra = "allow"
+
+    def __init__(self, pubkey: str, chain: SupportedChains, ttl: int = 120):
+        challenge = f'{{"chain":"{chain}","sender":"{pubkey}","type":"authorization_challenge","item_hash":"{randombytes(64).hex()}"}}'
         valid_til = int(time.time()) + ttl  # 60 seconds
         super().__init__(pubkey=pubkey, chain=chain, valid_til=valid_til, challenge=challenge)  # type: ignore
 
     @property
-    def token(self):
+    def token(self) -> Optional[str]:
         if self.expired:
             raise TimeoutError("Token Expired")
+        if self._token is False:
+            return None
         return self._token
 
     @property
@@ -43,16 +53,22 @@ class WalletAuth(AuthInfo):
         return int(time.time() > self.valid_til)
 
     def solve_challenge(self, signature: str):
+        print(self.challenge)
+        message = get_verification_buffer(json.loads(self.challenge))
+        print(message)
+        print(self.pubkey)
+        print(self.token)
+        print(signature)
         if self.expired:
             raise TimeoutError("Challenge Expired")
 
         if self.chain == SupportedChains.Solana:
             verify_signature_sol(
-                signature=signature, public_key=self.pubkey, message=self.challenge
+                signature=signature, public_key=self.pubkey, message=message
             )
         elif self.chain == SupportedChains.Ethereum:
             verify_signature_eth(
-                signature=signature, public_key=self.pubkey, message=self.challenge
+                signature=signature, public_key=self.pubkey, message=message
             )
         else:
             raise NotImplementedError(
@@ -93,6 +109,7 @@ class AuthTokenManager:
 
     @classmethod
     def get_auth(cls, token: str) -> WalletAuth:
+        print(token)
         auth = cls.__auths.get(token)
         if not auth:
             raise NotAuthorizedError("Not authorized")
@@ -115,6 +132,7 @@ class AuthTokenManager:
     ) -> WalletAuth:
         auth = cls.get_challenge(pubkey, chain)
         auth.solve_challenge(signature)
+        cls.__auths[auth.token] = auth
         return auth
 
     @classmethod
@@ -150,7 +168,7 @@ class AuthTokenManager:
         return auth
 
 
-class AuthTokenChecker:
+class SignatureChallengeTokenAuth(HTTPBearer):
     def __init__(
         self,
         auth_manager: AuthTokenManager,
@@ -160,6 +178,14 @@ class AuthTokenChecker:
         self.auth_manager = auth_manager
         self.challenge_endpoint = challenge_endpoint
         self.token_endpoint = token_endpoint
+        super().__init__(
+            scheme_name="Signature Challenge Token",
+            description=f"Authenticate using a challenge solution. "
+            f"First, send a POST request to {challenge_endpoint} with your public key and chain. "
+            f"Then, sign the challenge and send a POST request to {token_endpoint} with your public key, chain and signature. "
+            f"If successful, you will receive a token which you can use to authenticate future requests.",
+            auto_error=False,
+        )
 
     def __call__(self, request: Request) -> Optional[WalletAuth]:
         authorization = request.headers.get("Authorization")
@@ -188,3 +214,10 @@ class AuthTokenChecker:
                     f"and retrieve a token from f{self.token_endpoint}.",
                 )
             raise e
+
+
+WalletAuthDep = Annotated[WalletAuth, Depends(SignatureChallengeTokenAuth(
+    auth_manager=AuthTokenManager(),
+    challenge_endpoint="/authorization/challenge",
+    token_endpoint="/authorization/solve",
+))]
