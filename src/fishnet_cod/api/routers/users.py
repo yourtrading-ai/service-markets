@@ -2,8 +2,8 @@ from typing import List, Optional
 
 from fastapi import APIRouter
 
-from ...core.model import Dataset, Permission, PermissionStatus, Result, UserInfo, Execution, ExecutionStatus
-from ..api_model import Notification, NotificationType, PutUserInfo, PermissionRequestNotification
+from ...core.model import Permission, UserInfo
+from ..api_model import PutUserInfo
 
 router = APIRouter(
     prefix="/users",
@@ -57,75 +57,13 @@ async def get_specific_user(address: str) -> Optional[UserInfo]:
     return await UserInfo.filter(address=address).first()
 
 
-@router.get("/{address}/permissions/incoming")
-async def get_incoming_permission_requests(
+@router.get("/{address}/permissions")
+async def get_permissions(
     address: str,
     page: int = 1,
     page_size: int = 20,
 ) -> List[Permission]:
-    permission_records = await Permission.filter(authorizer=address).page(
+    permission_records = await Permission.filter(user_address=address).page(
         page=page, page_size=page_size
     )
     return permission_records
-
-
-@router.get("/{address}/permissions/outgoing")
-async def get_outgoing_permission_requests(
-    address: str,
-    page: int = 1,
-    page_size: int = 20,
-) -> List[Permission]:
-    permission_records = await Permission.filter(requestor=address).page(
-        page=page, page_size=page_size
-    )
-    return permission_records
-
-
-@router.get("/{address}/results")
-async def get_user_results(
-    address: str, page: int = 1, page_size: int = 20
-) -> List[Result]:
-    return await Result.filter(owner=address).page(page=page, page_size=page_size)
-
-
-@router.get("/{address}/notifications")
-async def get_notification(address: str) -> List[Notification]:
-    # requests permission for a whole dataset
-    permissions = await Permission.filter(
-        authorizer=address, status=PermissionStatus.REQUESTED
-    ).all()
-
-    # drop duplicates by dataset & requestor
-    permissions = list({(p.datasetID, p.requestor): p for p in permissions}.values())
-
-    datasets = await Dataset.fetch([p.datasetID for p in permissions]).all()
-    dataset_map = {d.item_hash: d for d in datasets}
-
-    notifications = []
-    for permission in permissions:
-        notifications.append(
-            PermissionRequestNotification(
-                type=NotificationType.PermissionRequest,
-                message_text=permission.requestor
-                + " has requested to access "
-                + dataset_map[permission.datasetID].name,
-                requestor=permission.requestor,
-                datasetID=permission.datasetID,
-                uses=None,
-                algorithmID=None
-            )
-        )
-
-    executions = await Execution.filter(owner=address, status__in=[ExecutionStatus.PENDING, ExecutionStatus.RUNNING]).all()
-    for execution in executions:
-        notifications.append(
-            Notification(
-                type=NotificationType.ExecutionTriggered,
-                message_text="Execution " + execution.item_hash + " has been triggered",
-                executionID=execution.item_hash,
-                datasetID=execution.datasetID,
-                algorithmID=execution.algorithmID,
-                status=execution.status
-            )
-        )
-    return notifications
