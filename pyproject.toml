@@ -1,10 +1,10 @@
 [project]
-tags = ["aleph.im", "cod", "time-series", "network", "data-science"]
+tags = ["aleph.im", "saas", "marketplace", "cryptocurrency", "fastapi"]
 
 [tool.poetry]
-name = "fishnet-cod"
-version = "1.1.0"
-description = "Compute-over-Data (CoD) network for time series data on Aleph.im"
+name = "service-markets"
+version = "0.0.1"
+description = "Software-as-a-Service (SaaS) Marketplace with cryptocurrency payments"
 authors = ["Mike Hukiewitz <mike.hukiewitz@robotter.ai>"]
 license = "AGPL-3.0"
 readme = "README.md"
@@ -13,11 +13,10 @@ packages = [{include = "src/fishnet_cod"}]
 [tool.poetry.dependencies]
 python = "^3.9"
 requests = "^2.30.0"
-pandas = "^2.0.1"
 PyNaCl = "^1.5.0"
 base58 = "^2.1.1"
 semver = "^3.0.0"
-pydantic = "^1.10.7"
+pydantic = "^1.10.8"
 fastapi = "^0.95.1"
 aleph-sdk-python = {git = "https://github.com/aleph-im/aleph-sdk-python.git"}
 aiohttp = "^3.8.4"

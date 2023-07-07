@@ -11,26 +11,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import OAuth2PasswordBearer
 
-from ..core.constants import API_MESSAGE_FILTER, FISHNET_MESSAGE_CHANNEL
-from ..core.model import (
-    Algorithm,
-    Dataset,
-    Execution,
-    Permission,
-    Result,
-    Timeseries,
-    UserInfo,
-    View,
-)
+from ..core.constants import API_MESSAGE_FILTER, SERVICE_MARKETS_MESSAGE_CHANNEL
 from ..core.session import initialize_aars
-from .api_model import MessageResponse
 from .routers import (
-    algorithms,
     services,
-    executions,
-    permissions,
-    results,
-    timeseries,
     users,
 )
 
@@ -53,12 +37,7 @@ http_app.add_middleware(
     allow_headers=["*"],
 )
 
-http_app.include_router(algorithms.router)
-http_app.include_router(datasets.router)
-http_app.include_router(executions.router)
-http_app.include_router(permissions.router)
-http_app.include_router(results.router)
-http_app.include_router(timeseries.router)
+http_app.include_router(services.router)
 http_app.include_router(users.router)
 
 app = AlephApp(http_app=http_app)
@@ -84,7 +63,7 @@ async def index():
     else:
         opt_venv = []
     return {
-        "vm_name": FISHNET_MESSAGE_CHANNEL,
+        "vm_name": SERVICE_MARKETS_MESSAGE_CHANNEL,
         "endpoints": [
             "/docs",
         ],
@@ -92,19 +71,6 @@ async def index():
             "/opt/venv": opt_venv,
         },
     }
-
-
-@app.delete("/clear/records")
-async def empty_records() -> MessageResponse:
-    await UserInfo.forget_all()
-    await Timeseries.forget_all()
-    await View.forget_all()
-    await Dataset.forget_all()
-    await Algorithm.forget_all()
-    await Execution.forget_all()
-    await Permission.forget_all()
-    await Result.forget_all()
-    return MessageResponse(response="All records are cleared")
 
 
 @app.post("/event")
@@ -116,16 +82,9 @@ async def event(event: PostMessage):
 async def fishnet_event(event: PostMessage):
     record: Optional[Record]
     print("fishnet_event", event)
-    if event.content.type in [
-        "Execution",
-        "Permission",
-        "Dataset",
-        "Timeseries",
-        "Algorithm",
-        "View",
-        "UserInfo",
-        "Result",
-    ]:
+    api_message_filter_without_amend = API_MESSAGE_FILTER.copy()
+    api_message_filter_without_amend.remove("amend")
+    if event.content.type in api_message_filter_without_amend:
         if Record.is_indexed(event.item_hash):
             return
         cls: Record = globals()[event.content.type]

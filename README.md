@@ -1,4 +1,4 @@
-# service-markets
+# service.markets
 Software-as-a-Service (SaaS) Marketplace with cryptocurrency payments
 
 ## Initial setup
@@ -12,19 +12,13 @@ poetry shell
 ```
 
 ## Run on local
-### Installing dev dependencies
-Before you can run and develop the API locally, you need to install the
-dev dependencies:
-```shell
-poetry install --dev
-```
 
 ### Running the API
 Uvicorn is used to run ASGI compatible web applications, such as the `app`
 web application from the example above. You need to specify it the name of the
 Python module to use and the name of the app:
 ```shell
-python -m uvicorn src.fishnet_cod.api.main:app --reload
+python -m uvicorn src.service_markets.api.main:app --reload
 ```
 
 Then open the app in a web browser on http://localhost:8000
@@ -41,7 +35,7 @@ export TEST_CHANNEL=true
 
 Then, you can run the API tests with:
 ```shell
-poetry run pytest src/fishnet_cod/api/test.py
+poetry run pytest src/service_markets/api/test.py
 ```
 
 **Note**: The tests run sequentially and if one fails, the following ones will also fail due to the event loop being closed.
