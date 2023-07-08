@@ -51,7 +51,7 @@ async def get_services(
             )
     else:
         services_response = [
-            ServiceWithPermissionStatus(service=service, permission_status=None)
+            ServiceWithPermissionStatus(**service.dict(), permission_status=None)
             for service in services
         ]
     return services_response
