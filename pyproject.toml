@@ -3,12 +3,12 @@ tags = ["aleph.im", "saas", "marketplace", "cryptocurrency", "fastapi"]
 
 [tool.poetry]
 name = "service-markets"
-version = "0.0.1"
+version = "0.2.0"
 description = "Software-as-a-Service (SaaS) Marketplace with cryptocurrency payments"
 authors = ["Mike Hukiewitz <mike.hukiewitz@robotter.ai>"]
 license = "AGPL-3.0"
 readme = "README.md"
-packages = [{include = "src/fishnet_cod"}]
+packages = [{include = "src/service_markets"}]
 
 [tool.poetry.dependencies]
 python = "^3.9"
