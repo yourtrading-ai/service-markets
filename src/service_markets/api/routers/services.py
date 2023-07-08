@@ -125,8 +125,8 @@ async def get_service_permissions(service_id: str) -> List[Permission]:
 @router.put("/{service_id}/vote")
 async def vote_service(
     service_id: str,
-    user_address: str,
     vote: VoteType,
+    wallet: WalletAuthDep,
 ) -> VoteServiceResponse:
     """
     Update your vote for a given service.
@@ -135,13 +135,13 @@ async def vote_service(
     if not service:
         raise HTTPException(status_code=404, detail="No Service found")
     vote_record = await Vote.filter(
-        item_id=service_id, user_address=user_address
+        item_id=service_id, user_address=wallet.address
     ).first()
     if not vote_record:
         vote_record = Vote(
             item_id=service_id,
             item_type=VotableType.SERVICE.value,
-            user_address=user_address,
+            user_address=wallet.address,
             vote=vote,
         )
     else:
@@ -167,7 +167,7 @@ async def get_service_comments(
 async def post_service_comment(
     service_id: str,
     comment: str,
-    user_address: str,
+    wallet: WalletAuthDep,
 ) -> Comment:
     """
     Post a comment for a given service.
@@ -175,7 +175,7 @@ async def post_service_comment(
     return await Comment(
         service_id=service_id,
         comment=comment,
-        user_address=user_address,
+        user_address=wallet.address,
     ).save()
 
 
@@ -183,8 +183,8 @@ async def post_service_comment(
 async def vote_service_comment(
     service_id: str,
     comment_id: str,
-    user_address: str,
     vote: VoteType,
+    wallet: WalletAuthDep,
 ) -> VoteCommentResponse:
     """
     Update your vote for a given comment.
@@ -193,13 +193,13 @@ async def vote_service_comment(
     if not comment:
         raise HTTPException(status_code=404, detail="No Comment found")
     vote_record = await Vote.filter(
-        item_id=comment_id, user_address=user_address
+        item_id=comment_id, user_address=wallet.address
     ).first()
     if not vote_record:
         vote_record = Vote(
             item_id=comment_id,
             item_type=VotableType.COMMENT.value,
-            user_address=user_address,
+            user_address=wallet.address,
             vote=vote,
         )
     else:

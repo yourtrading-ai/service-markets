@@ -2,10 +2,10 @@
 # It will raise a 403 if the user is not allowed to access the endpoint.
 # For the first request, the Aleph network will be queried to see if the user is allowed to access the endpoint.
 import asyncio
-from typing import Optional, Annotated
+from typing import Optional
 
 from aars import AARS
-from fastapi import HTTPException, FastAPI, Depends
+from fastapi import HTTPException, FastAPI
 from fastapi_walletauth import WalletAuth
 from fastapi_walletauth.core import SignatureChallengeTokenAuth
 from starlette.requests import Request

@@ -31,9 +31,9 @@ async def get_users(
 
 
 @router.put("")
-async def put_user_info(user_info: PutUserInfo, wallet_auth: WalletAuthDep) -> UserInfo:
+async def put_user_info(user_info: PutUserInfo, wallet: WalletAuthDep) -> UserInfo:
     user_record = None
-    if user_info.address != wallet_auth.address:
+    if user_info.address != wallet.address:
         raise HTTPException(
             status_code=403,
             detail="address does not match currently authorized user wallet",
