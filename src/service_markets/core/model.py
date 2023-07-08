@@ -21,6 +21,8 @@ class Service(Votable):
     name: str
     description: str
     url: str
+    image_url: Optional[str]
+    price: float
     tags: List[str]
     owner_address: str
     comment_counter: int = 0

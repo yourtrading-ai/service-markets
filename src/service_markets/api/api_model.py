@@ -26,6 +26,8 @@ class UploadServiceRequest(BaseModel):
     name: str
     description: str
     url: str
+    image_url: Optional[str]
+    price: float
     owner_address: str
     tags: List[str] = []
 
