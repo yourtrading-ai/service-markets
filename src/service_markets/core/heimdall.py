@@ -2,10 +2,10 @@
 # It will raise a 403 if the user is not allowed to access the endpoint.
 # For the first request, the Aleph network will be queried to see if the user is allowed to access the endpoint.
 import asyncio
-from typing import Optional
+from typing import Optional, Annotated
 
 from aars import AARS
-from fastapi import HTTPException, FastAPI
+from fastapi import HTTPException, FastAPI, Depends
 from fastapi_walletauth import WalletAuth
 from fastapi_walletauth.core import SignatureChallengeTokenAuth
 from starlette.requests import Request
@@ -53,6 +53,7 @@ class ServicePermissionAuth(SignatureChallengeTokenAuth):
             raise ValueError(
                 f"Service with url {self.service_url} is not registered on service.markets"
             )
+        print(f"Service {self.service_url} successfully loaded. Heimdall is ready.")
         self.service_record = service
 
 
@@ -65,7 +66,8 @@ class HeimdallMiddleware(BaseHTTPMiddleware):
         asyncio.get_event_loop().run_until_complete(self.backend.setup(**kwargs))
 
     async def dispatch(self, request, call_next):
-        request.state.wallet_auth = self.backend(request)
+        if not request.url.path.startswith("/authorization"):
+            request.state.wallet_auth = self.backend(request)
         return await call_next(request)
 
 
