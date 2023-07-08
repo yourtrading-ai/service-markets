@@ -71,7 +71,9 @@ async def upload_service(service: UploadServiceRequest) -> Service:
             old_service.owner_address = service.owner_address
             old_service.item_hash = service.item_hash
             old_service.url = service.url
+            old_service.image_url = service.image_url
             old_service.tags = service.tags
+            old_service.price = service.price
         else:
             raise HTTPException(status_code=404, detail="No Service found")
     return await Service(**service.dict()).save()
