@@ -13,8 +13,8 @@ class UserInfo(Record):
 
 
 class Votable(Record):
-    upvotes: int
-    downvotes: int
+    upvotes: int = 0
+    downvotes: int = 0
 
 
 class Service(Votable):
@@ -23,7 +23,7 @@ class Service(Votable):
     url: str
     tags: List[str]
     owner_address: str
-    comment_counter: int
+    comment_counter: int = 0
 
 
 class VoteType(Enum):
