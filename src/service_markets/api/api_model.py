@@ -16,6 +16,11 @@ Index(Service, "owner_address")
 
 Index(Permission, "user_address")
 Index(Permission, "service_id")
+Index(Permission, ["user_address", "service_id"])
+
+Index(Comment, "service_id")
+
+Index(Vote, ["item_id", "user_address"])
 
 Index(UserInfo, "address")
 Index(UserInfo, "username")
