@@ -77,6 +77,11 @@ async def event(event: PostMessage):
     await fishnet_event(event)
 
 
+@app.get("/address")
+async def address():
+    return AARS.account.get_address()
+
+
 @app.event(filters=API_MESSAGE_FILTER)
 async def fishnet_event(event: PostMessage):
     record: Optional[Record]
