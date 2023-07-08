@@ -28,12 +28,12 @@ class Service(Votable):
     comment_counter: int = 0
 
 
-class VoteType(Enum):
+class VoteType(str, Enum):
     UP = "up"
     DOWN = "down"
 
 
-class VotableType(Enum):
+class VotableType(str, Enum):
     SERVICE = "service"
     COMMENT = "comment"
 

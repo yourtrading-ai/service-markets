@@ -5,7 +5,7 @@ from fastapi import APIRouter, HTTPException
 
 from ...core.model import (
     Service,
-    Permission, Comment, VoteType, Vote, VotableType, Votable,
+    Permission, Comment, VoteType, Vote, VotableType,
 )
 from ..api_model import (
     ServiceWithPermissionStatus, UploadServiceRequest, VoteServiceResponse, VoteCommentResponse,
@@ -17,7 +17,7 @@ router = APIRouter(
     responses={404: {"description": "Not found"}},
 )
 
-T = TypeVar("T", bound=Votable)
+T = TypeVar("T", Service, Comment)
 
 
 @router.get("")
@@ -122,10 +122,10 @@ async def vote_service(
     if not vote_record:
         vote_record = Vote(
             item_id=service_id,
-            item_type=VotableType.SERVICE,
+            item_type=VotableType.SERVICE.value,
             user_address=user_address,
             vote=vote,
-        ),
+        )
     else:
         vote_record.vote = vote
     service, vote_record = await update_vote(service, vote_record)
@@ -180,10 +180,10 @@ async def vote_service_comment(
     if not vote_record:
         vote_record = Vote(
             item_id=comment_id,
-            item_type=VotableType.COMMENT,
+            item_type=VotableType.COMMENT.value,
             user_address=user_address,
             vote=vote,
-        ),
+        )
     else:
         vote_record.vote = vote
     comment, vote_record = await update_vote(comment, vote_record)
