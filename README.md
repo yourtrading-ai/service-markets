@@ -1,6 +1,7 @@
 # service.markets
 Software-as-a-Service (SaaS) Marketplace with cryptocurrency payments
 
+Service.markets runs on [FastAPI](https://fastapi.tiangolo.com/) and uses [Aleph.im](https://aleph.im/) for decentralized hosting. 
 ## Initial setup
 Install the FastAPI library and Uvicorn:
 ```shell

@@ -1,6 +1,6 @@
+from datetime import datetime
 from os import getenv
 
-import pandas as pd
 from aars import AARS
 from aleph.sdk.client import AuthenticatedAlephClient
 from aleph.sdk.chains.sol import get_fallback_account
@@ -25,7 +25,7 @@ async def initialize_aars():
     if custom_channel:
         channel = custom_channel
     elif test_channel_flag is not None and test_channel_flag.lower() == "true":
-        channel = "SERVICE_MARKETS_TEST_" + str(pd.to_datetime("now", utc=True))
+        channel = "SERVICE_MARKETS_TEST_" + str(datetime.now())
     else:
         channel = SERVICE_MARKETS_MESSAGE_CHANNEL
 
