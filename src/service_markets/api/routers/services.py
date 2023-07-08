@@ -121,7 +121,7 @@ async def vote_service(
     vote_record = await Vote.filter(item_id=service_id, user_address=user_address).first()
     if not vote_record:
         vote_record = Vote(
-            comment_id=service_id,
+            item_id=service_id,
             item_type=VotableType.SERVICE,
             user_address=user_address,
             vote=vote,
@@ -179,7 +179,7 @@ async def vote_service_comment(
     vote_record = await Vote.filter(item_id=comment_id, user_address=user_address).first()
     if not vote_record:
         vote_record = Vote(
-            comment_id=comment_id,
+            item_id=comment_id,
             item_type=VotableType.COMMENT,
             user_address=user_address,
             vote=vote,
