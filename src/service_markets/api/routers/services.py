@@ -6,10 +6,17 @@ from fastapi_walletauth import WalletAuthDep
 
 from ...core.model import (
     Service,
-    Permission, Comment, VoteType, Vote, VotableType,
+    Permission,
+    Comment,
+    VoteType,
+    Vote,
+    VotableType,
 )
 from ..api_model import (
-    ServiceWithPermissionStatus, UploadServiceRequest, VoteServiceResponse, VoteCommentResponse,
+    ServiceWithPermissionStatus,
+    UploadServiceRequest,
+    VoteServiceResponse,
+    VoteCommentResponse,
 )
 
 router = APIRouter(
@@ -46,8 +53,7 @@ async def get_services(
             permission = filter(lambda p: p.serviceID == service.item_hash, permissions)
             services_response.append(
                 ServiceWithPermissionStatus(
-                    **service.dict(),
-                    permission_status=permission is not None
+                    **service.dict(), permission_status=permission is not None
                 )
             )
     else:
@@ -59,13 +65,18 @@ async def get_services(
 
 
 @router.put("")
-async def upload_service(service: UploadServiceRequest, wallet: WalletAuthDep) -> Service:
+async def upload_service(
+    service: UploadServiceRequest, wallet: WalletAuthDep
+) -> Service:
     """
     Upload a service.
     If an `item_hash` is provided, it will update the service with that id.
     """
     if service.owner_address != wallet.address:
-        raise HTTPException(status_code=403, detail="address does not match currently authorized user wallet")
+        raise HTTPException(
+            status_code=403,
+            detail="address does not match currently authorized user wallet",
+        )
     if service.item_hash is not None:
         old_service = await Service.fetch(service.item_hash).first()
         if old_service:
@@ -96,7 +107,9 @@ async def get_service(
         permission = await Permission.filter(
             user_address=view_as, service_id=service_id
         ).first()
-        return ServiceWithPermissionStatus(**service.dict(), permission_status=permission is not None)
+        return ServiceWithPermissionStatus(
+            **service.dict(), permission_status=permission is not None
+        )
     return ServiceWithPermissionStatus(**service.dict(), permission_status=None)
 
 
@@ -121,7 +134,9 @@ async def vote_service(
     service = await Service.fetch(service_id).first()
     if not service:
         raise HTTPException(status_code=404, detail="No Service found")
-    vote_record = await Vote.filter(item_id=service_id, user_address=user_address).first()
+    vote_record = await Vote.filter(
+        item_id=service_id, user_address=user_address
+    ).first()
     if not vote_record:
         vote_record = Vote(
             item_id=service_id,
@@ -137,9 +152,7 @@ async def vote_service(
 
 @router.get("/{service_id}/comments")
 async def get_service_comments(
-    service_id: str,
-    page: int = 1,
-    page_size: int = 20
+    service_id: str, page: int = 1, page_size: int = 20
 ) -> List[Comment]:
     """
     Get all comments for a given service.
@@ -179,7 +192,9 @@ async def vote_service_comment(
     comment = await Comment.fetch(comment_id).first()
     if not comment:
         raise HTTPException(status_code=404, detail="No Comment found")
-    vote_record = await Vote.filter(item_id=comment_id, user_address=user_address).first()
+    vote_record = await Vote.filter(
+        item_id=comment_id, user_address=user_address
+    ).first()
     if not vote_record:
         vote_record = Vote(
             item_id=comment_id,

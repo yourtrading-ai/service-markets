@@ -1,5 +1,4 @@
-from enum import Enum
-from typing import List, Optional, Tuple, Union
+from typing import List, Optional
 
 from aars import Index
 from pydantic import BaseModel
@@ -7,7 +6,9 @@ from pydantic import BaseModel
 from ..core.model import (
     Permission,
     UserInfo,
-    Service, Vote, Comment,
+    Service,
+    Vote,
+    Comment,
 )
 
 

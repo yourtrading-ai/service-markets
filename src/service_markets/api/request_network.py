@@ -12,11 +12,8 @@ example_invoice = {
             "currency": "USD",
             "name": "Television",
             "quantity": 2,
-            "tax": {
-                "type": "percentage",
-                "amount": "20"
-            },
-            "unitPrice": "9999"
+            "tax": {"type": "percentage", "amount": "20"},
+            "unitPrice": "9999",
         }
     ],
     "invoiceNumber": "13",
@@ -28,22 +25,18 @@ example_invoice = {
             "city": "New York",
             "postalCode": "10038",
             "region": "New York",
-            "country": "US"
+            "country": "US",
         },
         "email": "justin.walton@acme-wholesaler.com",
         "firstName": "Justin",
         "lastName": "Walton",
-        "taxRegistration": "985-80-3313"
+        "taxRegistration": "985-80-3313",
     },
-    "paymentTerms": {
-        "dueDate": "2023-01-21T23:59:59.999Z"
-    },
+    "paymentTerms": {"dueDate": "2023-01-21T23:59:59.999Z"},
     "paymentAddress": "0x4886E85E192cdBC81d42D89256a81dAb990CDD74",
     "paymentCurrency": "USDC-matic",
-    "tags": [
-        "my_tag"
-    ],
-    "status": "paid"
+    "tags": ["my_tag"],
+    "status": "paid",
 }
 
 """
@@ -107,32 +100,39 @@ request_network_api_key = "4B8VN2G-56Q4K77-P8BY5MS-6123CD7"
 
 
 async def fetch_invoice(
-        invoice_id: str,
+    invoice_id: str,
 ) -> Any:
     """
     Fetch an invoice from the request network API.
     """
     async with aiohttp.ClientSession() as session:
-        async with session.get(f"https://api.request.finance/invoices/{invoice_id}", headers={
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": request_network_api_key,
-        }) as response:
+        async with session.get(
+            f"https://api.request.finance/invoices/{invoice_id}",
+            headers={
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": request_network_api_key,
+            },
+        ) as response:
             return await response.json()
 
 
 def fetch_invoice_sync(
-        invoice_id: str,
+    invoice_id: str,
 ) -> Any:
     """
     Fetch an invoice from the request network API.
     """
     import requests
-    response = requests.get(f"https://api.request.finance/invoices/{invoice_id}", headers={
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "Authorization": request_network_api_key,
-    })
+
+    response = requests.get(
+        f"https://api.request.finance/invoices/{invoice_id}",
+        headers={
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": request_network_api_key,
+        },
+    )
     return response.json()
 
 
@@ -141,11 +141,14 @@ async def fetch_invoices() -> Any:
     Fetch invoices from the request network API.
     """
     async with aiohttp.ClientSession() as session:
-        async with session.get(f"https://api.request.finance/invoices", headers={
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": request_network_api_key,
-        }) as response:
+        async with session.get(
+            f"https://api.request.finance/invoices",
+            headers={
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": request_network_api_key,
+            },
+        ) as response:
             return await response.json()
 
 
@@ -154,11 +157,15 @@ def fetch_invoices_sync() -> Any:
     Fetch invoices from the request network API.
     """
     import requests
-    response = requests.get(f"https://api.request.finance/invoices", headers={
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "Authorization": request_network_api_key,
-    })
+
+    response = requests.get(
+        f"https://api.request.finance/invoices",
+        headers={
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": request_network_api_key,
+        },
+    )
     return response.json()
 
 
@@ -169,11 +176,15 @@ async def create_invoice(
     Create an invoice on the request network API.
     """
     async with aiohttp.ClientSession() as session:
-        async with session.post(f"https://api.request.finance/invoices", headers={
-            "Accept": "application/json",
-            "Content-Type": "application/json",
-            "Authorization": request_network_api_key,
-        }, params=invoice.dict()) as response:
+        async with session.post(
+            f"https://api.request.finance/invoices",
+            headers={
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+                "Authorization": request_network_api_key,
+            },
+            params=invoice.dict(),
+        ) as response:
             return await response.json()
 
 
@@ -183,9 +194,13 @@ def create_invoice_sync(
     """
     Create an invoice on the request network API.
     """
-    response = requests.post(f"https://api.request.finance/invoices", headers={
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        "Authorization": request_network_api_key,
-    }, params=invoice.dict())
+    response = requests.post(
+        f"https://api.request.finance/invoices",
+        headers={
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": request_network_api_key,
+        },
+        params=invoice.dict(),
+    )
     return response.json()
