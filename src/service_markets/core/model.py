@@ -29,8 +29,8 @@ class Service(Votable):
 
 
 class VoteType(Enum):
-    UP = 1
-    DOWN = -1
+    UP = "up"
+    DOWN = "down"
 
 
 class VotableType(Enum):
