@@ -33,7 +33,7 @@ async def get_users(
 @router.put("")
 async def put_user_info(user_info: PutUserInfo, wallet_auth: WalletAuthDep) -> UserInfo:
     user_record = None
-    if user_info.address != wallet_auth.pubkey:
+    if user_info.address != wallet_auth.address:
         raise HTTPException(status_code=403, detail="address does not match currently authorized user wallet")
     if user_info.address:
         user_record = await UserInfo.filter(address=user_info.address).first()

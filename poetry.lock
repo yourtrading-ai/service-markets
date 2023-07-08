@@ -1084,17 +1084,19 @@ test = ["anyio[trio] (>=3.2.1,<4.0.0)", "black (==23.1.0)", "coverage[toml] (>=6
 
 [[package]]
 name = "fastapi-walletauth"
-version = "0.1.5"
+version = "0.1.7"
 description = "FastAPI extension for user authentication through signature challenges"
 optional = false
-python-versions = ">=3.6.2,<4.0"
+python-versions = ">=3.7,<4.0"
 files = [
-    {file = "fastapi_walletauth-0.1.5-py3-none-any.whl", hash = "sha256:c7d066571b5c4b3a85f257018c1365912fe5a9949183ce609cf4c2caaa3d01ed"},
-    {file = "fastapi_walletauth-0.1.5.tar.gz", hash = "sha256:de7ba556776136a787ee9920edd93f2c6cdb441ad369ccc8357ec4298d7b0f55"},
+    {file = "fastapi_walletauth-0.1.7-py3-none-any.whl", hash = "sha256:b75f665286689b9cc1910e26ec02704db532db31b5dd84c155983c8f9f4d8e97"},
+    {file = "fastapi_walletauth-0.1.7.tar.gz", hash = "sha256:ecfbe878e12e15b2973bba4abe5f4b1f71570ec21ef434df3f4538966cab61a7"},
 ]
 
 [package.dependencies]
 base58 = ">=2.0.0,<3.0"
+eth-account = ">=0.9.0,<0.10.0"
+eth-keys = ">=0.4.0,<0.5.0"
 fastapi = ">=0.60.1,<1.0"
 pynacl = ">=1.5.0,<2.0.0"
 
@@ -2261,4 +2263,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "022ae28e155e630c8ff03f3f0124f1bcafce30d9668bae260384690bb3f61482"
+content-hash = "48a449ab729d28b3922a46fbdce258081528e27435c631e1bf143307f599f040"
