@@ -1,7 +1,7 @@
 import json
 import time
 from enum import Enum
-from typing import Dict, Optional, Annotated, Union
+from typing import Dict, Optional, Annotated
 
 from aleph.sdk.chains.common import get_verification_buffer
 from aleph.sdk.chains.ethereum import verify_signature as verify_signature_eth

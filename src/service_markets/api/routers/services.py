@@ -191,11 +191,12 @@ async def vote_service_comment(
 
 
 async def update_vote(votable: T, vote_record: Vote) -> Tuple[T, Vote]:
-    if vote_record:
-        if vote_record.vote == VoteType.UP and vote_record.vote == VoteType.DOWN:
+    print(vote_record.vote.value, VoteType.UP.value)
+    if vote_record.item_hash is not None:
+        if vote_record.vote.value == VoteType.UP.value and vote_record.changed:
             votable.downvotes -= 1
             votable.upvotes += 1
-        elif vote_record.vote == VoteType.DOWN and vote_record.vote == VoteType.UP:
+        elif vote_record.vote.value == VoteType.DOWN.value and vote_record.changed:
             votable.downvotes += 1
             votable.upvotes -= 1
         await asyncio.gather(
@@ -203,8 +204,8 @@ async def update_vote(votable: T, vote_record: Vote) -> Tuple[T, Vote]:
             vote_record.save(),
         )
     else:
-        votable.upvotes += 1 if vote_record.vote == VoteType.UP else 0
-        votable.downvotes += 1 if vote_record.vote == VoteType.DOWN else 0
+        votable.upvotes += 1 if vote_record.vote.value == VoteType.UP.value else 0
+        votable.downvotes += 1 if vote_record.vote.value == VoteType.DOWN.value else 0
         vote_record, votable = await asyncio.gather(
             vote_record.save(),
             votable.save(),

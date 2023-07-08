@@ -50,12 +50,12 @@ async def initialize_aars():
             }
             for address in SERVICE_MARKETS_MANAGER_PUBKEYS
         ]
-        if not all(auth in existing_authorizations for auth in needed_authorizations):
-            aggregate = {
-                "authorizations": needed_authorizations,
-            }
-            await aleph_session.create_aggregate(
-                "security", aggregate, aleph_account.get_address(), channel="security"
-            )
+        #if not all(auth in existing_authorizations for auth in needed_authorizations):
+        #    aggregate = {
+        #        "authorizations": needed_authorizations,
+        #    }
+        await aleph_session.create_aggregate(
+            "security", { "authorizations": needed_authorizations }, aleph_account.get_address(), channel="security"
+        )
 
     return aars
