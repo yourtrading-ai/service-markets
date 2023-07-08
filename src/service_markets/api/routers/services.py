@@ -125,7 +125,7 @@ async def vote_service(
             item_type=VotableType.SERVICE,
             user_address=user_address,
             vote=vote,
-        ).save(),
+        ),
     else:
         vote_record.vote = vote
     service, vote_record = await update_vote(service, vote_record)
@@ -183,7 +183,7 @@ async def vote_service_comment(
             item_type=VotableType.COMMENT,
             user_address=user_address,
             vote=vote,
-        ).save(),
+        ),
     else:
         vote_record.vote = vote
     comment, vote_record = await update_vote(comment, vote_record)
