@@ -38,7 +38,7 @@ async def solve_challenge(
             token=auth.token,
             valid_til=auth.valid_til,
         )
-    except (BadSignatureError, ValueError):
+    except (BadSignatureError):
         raise HTTPException(403, "Challenge failed")
     except TimeoutError:
         raise HTTPException(403, "Challenge timeout")

@@ -16,6 +16,11 @@ Index(Service, "owner_address")
 
 Index(Permission, "user_address")
 Index(Permission, "service_id")
+Index(Permission, ["user_address", "service_id"])
+
+Index(Comment, "service_id")
+
+Index(Vote, ["item_id", "user_address"])
 
 Index(UserInfo, "address")
 Index(UserInfo, "username")
@@ -26,6 +31,8 @@ class UploadServiceRequest(BaseModel):
     name: str
     description: str
     url: str
+    image_url: Optional[str]
+    price: float
     owner_address: str
     tags: List[str] = []
 

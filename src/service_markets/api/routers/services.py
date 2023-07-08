@@ -45,13 +45,13 @@ async def get_services(
             permission = filter(lambda p: p.serviceID == service.item_hash, permissions)
             services_response.append(
                 ServiceWithPermissionStatus(
-                    service=service,
+                    **service.dict(),
                     permission_status=permission is not None
                 )
             )
     else:
         services_response = [
-            ServiceWithPermissionStatus(service=service, permission_status=None)
+            ServiceWithPermissionStatus(**service.dict(), permission_status=None)
             for service in services
         ]
     return services_response
@@ -71,7 +71,9 @@ async def upload_service(service: UploadServiceRequest) -> Service:
             old_service.owner_address = service.owner_address
             old_service.item_hash = service.item_hash
             old_service.url = service.url
+            old_service.image_url = service.image_url
             old_service.tags = service.tags
+            old_service.price = service.price
         else:
             raise HTTPException(status_code=404, detail="No Service found")
     return await Service(**service.dict()).save()
@@ -89,10 +91,10 @@ async def get_service(
         raise HTTPException(status_code=404, detail="No Service found")
     if view_as:
         permission = await Permission.filter(
-            user_address=view_as, serviceID=service_id
+            user_address=view_as, service_id=service_id
         ).first()
-        return ServiceWithPermissionStatus(service=service, permission_status=permission is not None)
-    return ServiceWithPermissionStatus(service=service, permission_status=None)
+        return ServiceWithPermissionStatus(**service.dict(), permission_status=permission is not None)
+    return ServiceWithPermissionStatus(**service.dict(), permission_status=None)
 
 
 @router.get("/{service_id}/permissions")
@@ -116,7 +118,7 @@ async def vote_service(
     service = await Service.fetch(service_id).first()
     if not service:
         raise HTTPException(status_code=404, detail="No Service found")
-    vote_record = await Vote.filter(service_id=service_id, user_address=user_address).first()
+    vote_record = await Vote.filter(item_id=service_id, user_address=user_address).first()
     if not vote_record:
         vote_record = Vote(
             comment_id=service_id,
@@ -174,7 +176,7 @@ async def vote_service_comment(
     comment = await Comment.fetch(comment_id).first()
     if not comment:
         raise HTTPException(status_code=404, detail="No Comment found")
-    vote_record = await Vote.filter(comment_id=comment_id, user_address=user_address).first()
+    vote_record = await Vote.filter(item_id=comment_id, user_address=user_address).first()
     if not vote_record:
         vote_record = Vote(
             comment_id=comment_id,

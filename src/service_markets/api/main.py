@@ -9,13 +9,13 @@ from aleph.sdk.vm.app import AlephApp
 from aleph_message.models import PostMessage
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.security import OAuth2PasswordBearer
 
 from ..core.constants import API_MESSAGE_FILTER, SERVICE_MARKETS_MESSAGE_CHANNEL
 from ..core.session import initialize_aars
 from .routers import (
     services,
     users,
+    authorization,
 )
 
 logger = (
@@ -24,8 +24,6 @@ logger = (
     else logging.getLogger("uvicorn")
 )
 http_app = FastAPI()
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/challenge")
 
 origins = ["*"]
 
@@ -39,6 +37,7 @@ http_app.add_middleware(
 
 http_app.include_router(services.router)
 http_app.include_router(users.router)
+http_app.include_router(authorization.router)
 
 app = AlephApp(http_app=http_app)
 
@@ -76,6 +75,11 @@ async def index():
 @app.post("/event")
 async def event(event: PostMessage):
     await fishnet_event(event)
+
+
+@app.get("/address")
+async def address():
+    return AARS.account.get_address()
 
 
 @app.event(filters=API_MESSAGE_FILTER)
