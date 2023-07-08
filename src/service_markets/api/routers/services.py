@@ -91,8 +91,8 @@ async def get_service(
         permission = await Permission.filter(
             user_address=view_as, serviceID=service_id
         ).first()
-        return ServiceWithPermissionStatus(service=service, permission_status=permission is not None)
-    return ServiceWithPermissionStatus(service=service, permission_status=None)
+        return ServiceWithPermissionStatus(**service.dict(), permission_status=permission is not None)
+    return ServiceWithPermissionStatus(**service.dict(), permission_status=None)
 
 
 @router.get("/{service_id}/permissions")
