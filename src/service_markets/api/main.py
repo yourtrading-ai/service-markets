@@ -9,13 +9,13 @@ from aleph.sdk.vm.app import AlephApp
 from aleph_message.models import PostMessage
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi_walletauth import authorization_routes
 
 from ..core.constants import API_MESSAGE_FILTER, SERVICE_MARKETS_MESSAGE_CHANNEL
 from ..core.session import initialize_aars
 from .routers import (
     services,
     users,
-    authorization,
 )
 
 logger = (
@@ -37,7 +37,7 @@ http_app.add_middleware(
 
 http_app.include_router(services.router)
 http_app.include_router(users.router)
-http_app.include_router(authorization.router)
+http_app.include_router(authorization_routes)
 
 app = AlephApp(http_app=http_app)
 
