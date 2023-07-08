@@ -1083,6 +1083,22 @@ doc = ["mdx-include (>=1.4.1,<2.0.0)", "mkdocs (>=1.1.2,<2.0.0)", "mkdocs-markdo
 test = ["anyio[trio] (>=3.2.1,<4.0.0)", "black (==23.1.0)", "coverage[toml] (>=6.5.0,<8.0)", "databases[sqlite] (>=0.3.2,<0.7.0)", "email-validator (>=1.1.1,<2.0.0)", "flask (>=1.1.2,<3.0.0)", "httpx (>=0.23.0,<0.24.0)", "isort (>=5.0.6,<6.0.0)", "mypy (==0.982)", "orjson (>=3.2.1,<4.0.0)", "passlib[bcrypt] (>=1.7.2,<2.0.0)", "peewee (>=3.13.3,<4.0.0)", "pytest (>=7.1.3,<8.0.0)", "python-jose[cryptography] (>=3.3.0,<4.0.0)", "python-multipart (>=0.0.5,<0.0.7)", "pyyaml (>=5.3.1,<7.0.0)", "ruff (==0.0.138)", "sqlalchemy (>=1.3.18,<1.4.43)", "types-orjson (==3.6.2)", "types-ujson (==5.7.0.1)", "ujson (>=4.0.1,!=4.0.2,!=4.1.0,!=4.2.0,!=4.3.0,!=5.0.0,!=5.1.0,<6.0.0)"]
 
 [[package]]
+name = "fastapi-walletauth"
+version = "0.1.5"
+description = "FastAPI extension for user authentication through signature challenges"
+optional = false
+python-versions = ">=3.6.2,<4.0"
+files = [
+    {file = "fastapi_walletauth-0.1.5-py3-none-any.whl", hash = "sha256:c7d066571b5c4b3a85f257018c1365912fe5a9949183ce609cf4c2caaa3d01ed"},
+    {file = "fastapi_walletauth-0.1.5.tar.gz", hash = "sha256:de7ba556776136a787ee9920edd93f2c6cdb441ad369ccc8357ec4298d7b0f55"},
+]
+
+[package.dependencies]
+base58 = ">=2.0.0,<3.0"
+fastapi = ">=0.60.1,<1.0"
+pynacl = ">=1.5.0,<2.0.0"
+
+[[package]]
 name = "frozenlist"
 version = "1.3.3"
 description = "A list-like structure which implements collections.abc.MutableSequence"
@@ -2245,4 +2261,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.9"
-content-hash = "7e9e6f573600366312b38fa99df820e8a46bbfbe73725f72101d3b3e0dfeae65"
+content-hash = "022ae28e155e630c8ff03f3f0124f1bcafce30d9668bae260384690bb3f61482"

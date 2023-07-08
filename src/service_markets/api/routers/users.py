@@ -1,8 +1,8 @@
 from typing import List, Optional
 
 from fastapi import APIRouter, HTTPException
+from fastapi_walletauth import WalletAuthDep
 
-from ..security import WalletAuthDep
 from ...core.model import Permission, UserInfo
 from ..api_model import PutUserInfo
 

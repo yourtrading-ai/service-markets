@@ -2,6 +2,7 @@ import asyncio
 from typing import List, Optional, TypeVar, Tuple
 
 from fastapi import APIRouter, HTTPException
+from fastapi_walletauth import WalletAuthDep
 
 from ...core.model import (
     Service,
@@ -58,11 +59,13 @@ async def get_services(
 
 
 @router.put("")
-async def upload_service(service: UploadServiceRequest) -> Service:
+async def upload_service(service: UploadServiceRequest, wallet: WalletAuthDep) -> Service:
     """
     Upload a service.
     If an `item_hash` is provided, it will update the service with that id.
     """
+    if service.owner_address != wallet.address:
+        raise HTTPException(status_code=403, detail="address does not match currently authorized user wallet")
     if service.item_hash is not None:
         old_service = await Service.fetch(service.item_hash).first()
         if old_service:

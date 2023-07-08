@@ -9,7 +9,6 @@ from ..core.model import (
     UserInfo,
     Service, Vote, Comment,
 )
-from .security import AuthInfo
 
 
 Index(Service, "owner_address")
@@ -57,14 +56,6 @@ class PutUserInfo(BaseModel):
     bio: Optional[str]
     email: Optional[str]
     link: Optional[str]
-
-
-class TokenChallengeResponse(AuthInfo):
-    challenge: str
-
-
-class BearerTokenResponse(AuthInfo):
-    token: str
 
 
 class MessageResponse(BaseModel):
