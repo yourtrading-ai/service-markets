@@ -45,7 +45,7 @@ async def get_services(
             permission = filter(lambda p: p.serviceID == service.item_hash, permissions)
             services_response.append(
                 ServiceWithPermissionStatus(
-                    service=service,
+                    **service.dict(),
                     permission_status=permission is not None
                 )
             )
