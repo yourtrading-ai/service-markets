@@ -48,7 +48,7 @@ async def initialize_aars(
     aars = AARS(
         account=aleph_account, channel=channel, cache=cache, session=aleph_session
     )
-
+    print(f"Using account: {aleph_account.get_address()}")
     if aleph_account.get_address() in SERVICE_MARKETS_MANAGER_PUBKEYS:
         try:
             resp, status = await aleph_session.fetch_aggregate(
