@@ -2,6 +2,7 @@ from enum import Enum
 from typing import List, Optional
 
 from aars import Record
+from pydantic import Field
 
 
 class UserInfo(Record):
@@ -26,6 +27,7 @@ class Service(Votable):
     tags: List[str]
     owner_address: str
     comment_counter: int = 0
+    payment_id: Optional[str] = None
 
 
 class VoteType(str, Enum):
@@ -54,3 +56,13 @@ class Comment(Votable):
 class Permission(Record):
     user_address: str
     service_id: str
+
+
+class Payment(Record):
+    contractAddress: str
+    tokenAddress: str
+    txHash: str
+    to: str
+    from_: str = Field(alias='from')
+    amount: str
+    reference: str

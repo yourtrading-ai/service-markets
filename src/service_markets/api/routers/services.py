@@ -10,14 +10,15 @@ from ...core.model import (
     Comment,
     VoteType,
     Vote,
-    VotableType,
+    VotableType, Payment,
 )
 from ..api_model import (
     ServiceWithPermissionStatus,
     UploadServiceRequest,
     VoteServiceResponse,
-    VoteCommentResponse,
+    VoteCommentResponse, PutInvoiceServiceResponse,
 )
+from ...core.request_network import fetch_payment
 
 router = APIRouter(
     prefix="/services",
@@ -148,6 +149,42 @@ async def vote_service(
         vote_record.vote = vote
     service, vote_record = await update_vote(service, vote_record)
     return VoteServiceResponse(service=service, vote=vote_record)
+
+
+@router.put("/{service_id}/payment/{tx_hash}")
+async def put_invoice_service(
+    service_id: str,
+    tx_hash: str,
+    wallet: WalletAuthDep,
+) -> PutInvoiceServiceResponse:
+    """
+    Update your payment for a given service.
+    """
+    service = await Service.fetch(service_id).first()
+    if not service:
+        raise HTTPException(status_code=404, detail="No Service found")
+    payment = await Payment.filter(txHash=tx_hash).first()
+    if payment:
+        raise HTTPException(status_code=409, detail="Payment already registered")
+    payment = await fetch_payment(tx_hash)
+    if not payment:
+        raise HTTPException(status_code=404, detail="No Payment found")
+    if payment.from_ != wallet.address:
+        raise HTTPException(
+            status_code=403,
+            detail="payment does not match currently authorized user wallet",
+        )
+    await payment.save()
+    service.payment_id = payment.item_hash
+    permission = Permission(
+        service_id=service_id,
+        user_address=wallet.address,
+    )
+    service, permission = await asyncio.gather(
+        service.save(),
+        permission.save(),
+    )
+    return PutInvoiceServiceResponse(service=service, permission=permission, payment=payment)
 
 
 @router.get("/{service_id}/comments")

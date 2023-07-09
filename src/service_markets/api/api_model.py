@@ -8,7 +8,7 @@ from ..core.model import (
     UserInfo,
     Service,
     Vote,
-    Comment,
+    Comment, Payment,
 )
 
 
@@ -17,6 +17,8 @@ Index(Service, "owner_address")
 Index(Permission, "user_address")
 Index(Permission, "service_id")
 Index(Permission, ["user_address", "service_id"])
+
+Index(Payment, "txHash")
 
 Index(Comment, "service_id")
 
@@ -44,6 +46,12 @@ class ServiceWithPermissionStatus(Service):
 class VoteServiceResponse(BaseModel):
     vote: Vote
     service: Service
+
+
+class PutInvoiceServiceResponse(BaseModel):
+    service: Service
+    payment: Payment
+    permission: Permission
 
 
 class VoteCommentResponse(BaseModel):
