@@ -75,13 +75,14 @@ async def upload_service(
     Upload a service.
     If an `item_hash` is provided, it will update the service with that id.
     """
-    if service.owner_address != wallet.address:
-        raise HTTPException(
-            status_code=403,
-            detail="address does not match currently authorized user wallet",
-        )
     if service.item_hash is not None:
         old_service = await Service.fetch(service.item_hash).first()
+        if old_service.owner_address != wallet.address:
+            print(service.owner_address, wallet.address)
+            raise HTTPException(
+                status_code=403,
+                detail="address does not match currently authorized user wallet",
+            )
         if old_service:
             old_service.name = service.name
             old_service.description = service.description
@@ -94,6 +95,7 @@ async def upload_service(
             return await old_service.save()
         else:
             raise HTTPException(status_code=404, detail="No Service found")
+    service.owner_address = wallet.address
     return await Service(**service.dict()).save()
 
 
