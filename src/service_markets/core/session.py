@@ -43,6 +43,9 @@ async def initialize_aars(
     else:
         channel = SERVICE_MARKETS_MESSAGE_CHANNEL
 
+    if not channel:
+        channel = SERVICE_MARKETS_MESSAGE_CHANNEL
+
     print("Using channel: " + channel)
 
     aars = AARS(
