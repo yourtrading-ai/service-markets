@@ -54,6 +54,8 @@ class ServicePermissionAuth(SignatureChallengeTokenAuth):
 
     async def setup(self, **kwargs):
         self.aars = await initialize_aars(**kwargs)
+        print(f"Heimdall re-indexing channel {AARS.channel}")
+        await asyncio.wait_for(AARS.sync_indices(), timeout=None)
         service = await Service.filter(url=self.service_url).first()
         if not service:
             raise ValueError(
