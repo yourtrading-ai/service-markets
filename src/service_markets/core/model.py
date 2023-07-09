@@ -63,6 +63,6 @@ class Payment(Record):
     tokenAddress: str
     txHash: str
     to: str
-    from_: str = Field(alias='from')
+    from_: str = Field(alias="from")
     amount: str
     reference: str

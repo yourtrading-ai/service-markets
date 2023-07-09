@@ -6,9 +6,11 @@ from .model import Payment
 
 
 async def fetch_payment(tx_hash: str) -> Payment:
-    url = 'https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-goerli'
+    url = (
+        "https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-goerli"
+    )
 
-    headers = {'Content-Type': 'application/json'}
+    headers = {"Content-Type": "application/json"}
     request_json = json.dumps({"query": payment_query.format(tx_hash)})
 
     # Initiate the session
@@ -21,14 +23,16 @@ async def fetch_payment(tx_hash: str) -> Payment:
             # Fetch the json response
             json_response = await response.json()
 
-    return Payment(**(await response.json())['data']['payments'][0])
+    return Payment(**(await response.json())["data"]["payments"][0])
 
 
 def fetch_payment_sync(tx_hash: str) -> Payment:
     # The endpoint URL for the Request Payments Subgraph
-    url = 'https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-goerli'
+    url = (
+        "https://api.thegraph.com/subgraphs/name/requestnetwork/request-payments-goerli"
+    )
 
-    headers = {'Content-Type': 'application/json'}
+    headers = {"Content-Type": "application/json"}
 
     request_json = json.dumps({"query": payment_query.format(tx_hash)})
 
@@ -38,7 +42,7 @@ def fetch_payment_sync(tx_hash: str) -> Payment:
     # Raise an exception in case of status error
     response.raise_for_status()
 
-    return Payment(**response.json()['data']['payments'][0])
+    return Payment(**response.json()["data"]["payments"][0])
 
 
 payment_query = """

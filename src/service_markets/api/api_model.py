@@ -8,7 +8,8 @@ from ..core.model import (
     UserInfo,
     Service,
     Vote,
-    Comment, Payment,
+    Comment,
+    Payment,
 )
 
 

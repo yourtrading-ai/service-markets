@@ -10,13 +10,15 @@ from ...core.model import (
     Comment,
     VoteType,
     Vote,
-    VotableType, Payment,
+    VotableType,
+    Payment,
 )
 from ..api_model import (
     ServiceWithPermissionStatus,
     UploadServiceRequest,
     VoteServiceResponse,
-    VoteCommentResponse, PutInvoiceServiceResponse,
+    VoteCommentResponse,
+    PutInvoiceServiceResponse,
 )
 from ...core.request_network import fetch_payment
 
@@ -185,7 +187,9 @@ async def put_invoice_service(
         service.save(),
         permission.save(),
     )
-    return PutInvoiceServiceResponse(service=service, permission=permission, payment=payment)
+    return PutInvoiceServiceResponse(
+        service=service, permission=permission, payment=payment
+    )
 
 
 @router.get("/{service_id}/comments")
