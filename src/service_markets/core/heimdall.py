@@ -4,7 +4,7 @@
 import asyncio
 from typing import Optional
 
-from aars import AARS
+from aars import AARS, Index
 from fastapi import HTTPException, FastAPI
 from fastapi_walletauth import WalletAuth
 from fastapi_walletauth.core import SignatureChallengeTokenAuth
@@ -15,10 +15,15 @@ from .model import Permission, Service
 from .session import initialize_aars
 
 
+Index(Service, "url")
+Index(Permission, ["user_address", "service_id"])
+
+
 class ServicePermissionAuth(SignatureChallengeTokenAuth):
     aars: AARS
     service_record: Optional[Service] = None
     cached_permissions = {}
+    ready = False
 
     def __init__(
         self,
@@ -34,7 +39,8 @@ class ServicePermissionAuth(SignatureChallengeTokenAuth):
         wallet_auth: WalletAuth = super().__call__(request)
         if self.cached_permissions.get(wallet_auth.address):
             return wallet_auth
-        permission_record = asyncio.get_event_loop().run_until_complete(Permission.filter(
+        loop = self.aars.session.http_session.loop
+        permission_record = loop.run_until_complete(Permission.filter(
             user_address=wallet_auth.address,
             service_id=self.service_record.item_hash,
         ).all())
@@ -55,6 +61,7 @@ class ServicePermissionAuth(SignatureChallengeTokenAuth):
             )
         print(f"Service {self.service_url} successfully loaded. Heimdall is ready.")
         self.service_record = service
+        self.ready = True
 
 
 class HeimdallMiddleware(BaseHTTPMiddleware):
@@ -62,11 +69,11 @@ class HeimdallMiddleware(BaseHTTPMiddleware):
         super().__init__(app)
         self.backend = backend
         self.kwargs = kwargs
-        # setup backend
-        asyncio.get_event_loop().run_until_complete(self.backend.setup(**kwargs))
 
     async def dispatch(self, request, call_next):
         if not request.url.path.startswith("/authorization"):
+            if not self.backend.ready:
+                await self.backend.setup(**self.kwargs)
             request.state.wallet_auth = self.backend(request)
         return await call_next(request)
 
@@ -79,5 +86,5 @@ def setup_heimdall(app: FastAPI, service_url: str, **kwargs):
     app.add_middleware(
         HeimdallMiddleware,
         backend=ServicePermissionAuth(service_url),
-        backend_kwargs=kwargs,
+        **kwargs,
     )
