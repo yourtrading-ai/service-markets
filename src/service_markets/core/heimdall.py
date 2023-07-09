@@ -34,10 +34,10 @@ class ServicePermissionAuth(SignatureChallengeTokenAuth):
         wallet_auth: WalletAuth = super().__call__(request)
         if self.cached_permissions.get(wallet_auth.address):
             return wallet_auth
-        permission_record = await Permission.filter(
+        permission_record = asyncio.get_event_loop().run_until_complete(Permission.filter(
             user_address=wallet_auth.address,
             service_id=self.service_record.item_hash,
-        ).all()
+        ).all())
         if not permission_record:
             raise HTTPException(
                 status_code=403,
